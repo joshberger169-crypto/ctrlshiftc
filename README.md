@@ -20,7 +20,7 @@ Chrome's Inspect shortcut also uses Ctrl+Shift+C on some platforms. Chrome or OS
 
 ## Behavior
 
-A brief **✓ Clean URL copied** toast appears at the bottom of the page after copying. It dismisses automatically without taking focus. Failed copies show an error message. Chrome internal pages and the Web Store block page overlays; the toolbar badge provides **OK** / **ERR** feedback there. Pin the extension to see the badge.
+A brief **✓ Clean URL copied** toast appears at the bottom of the page after copying. It dismisses automatically without taking focus. Failed copies show an error message. Chrome internal pages and the Web Store block page overlays; the toolbar badge provides **OK** / **ERR** feedback there. If Chrome also hides the page URL, the clipboard is left untouched and the badge tooltip asks you to try a regular website. Pin the extension to see the badge.
 
 For example:
 

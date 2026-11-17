@@ -27,16 +27,18 @@ async function ensureOffscreen() {
   }
 }
 
-async function feedback(tabId, success) {
+async function feedback(
+  tabId,
+  success,
+  errorMessage = "Could not copy URL. Try again using the toolbar button.",
+) {
   clearTimeout(feedbackTimers.get(tabId));
   await Promise.all([
     chrome.action.setBadgeText({ tabId, text: success ? "OK" : "ERR" }),
     chrome.action.setBadgeBackgroundColor({ tabId, color: success ? "#15803d" : "#b91c1c" }),
     chrome.action.setTitle({
       tabId,
-      title: success
-        ? "Clean URL copied"
-        : "Could not copy URL. Try again using the toolbar button.",
+      title: success ? "Clean URL copied" : errorMessage,
     }),
   ]);
   // Chrome's internal pages and the Web Store forbid script injection.
@@ -60,9 +62,27 @@ async function feedback(tabId, success) {
   );
 }
 
+async function resolveTab(tab) {
+  if (tab?.url) return tab;
+  // Command events may carry a partial snapshot. Refresh that same tab rather
+  // than copying a different tab if focus changes while the command is queued.
+  if (tab?.id !== undefined) return chrome.tabs.get(tab.id);
+  const [active] = await chrome.tabs.query({ active: true, currentWindow: true });
+  return active;
+}
+
 async function copyTab(tab) {
   try {
-    if (!tab?.url) throw new Error("The current tab URL is unavailable.");
+    if (!tab?.url) {
+      if (tab?.id !== undefined) {
+        await feedback(
+          tab.id,
+          false,
+          "Chrome did not expose this page URL. Try a regular website.",
+        );
+      }
+      return;
+    }
     const text = cleanUrl(tab.url);
     await ensureOffscreen();
     const response = await chrome.runtime.sendMessage({ target: "offscreen", type: "copy", text });
@@ -74,9 +94,9 @@ async function copyTab(tab) {
   }
 }
 
-function enqueue(tabPromise) {
+function enqueue(tab) {
   // Capture the active tab immediately, then serialize clipboard writes.
-  const captured = Promise.resolve(tabPromise).then(
+  const captured = resolveTab(tab).then(
     (tab) => ({ tab }),
     (error) => ({ error }),
   );
@@ -91,6 +111,6 @@ function enqueue(tabPromise) {
 
 chrome.commands.onCommand.addListener((command, tab) => {
   if (command !== "copy-clean-url") return;
-  enqueue(tab || chrome.tabs.query({ active: true, currentWindow: true }).then((tabs) => tabs[0]));
+  enqueue(tab);
 });
 chrome.action.onClicked.addListener((tab) => enqueue(tab));

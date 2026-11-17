@@ -55,7 +55,11 @@ test("command and toolbar copy through one offscreen document, with failure feed
         exists = true;
       },
     },
-    tabs: { query: async () => [{ id: 1, url: "https://example.com/?utm_source=a&q=ok" }] },
+    tabs: {
+      query: async () => [{ id: 1, url: "https://example.com/?utm_source=a&q=ok" }],
+      get: async (id) =>
+        id === 5 ? { id } : { id, url: "https://example.com/?utm_source=shortcut&q=recovered" },
+    },
   };
   const originalTimeout = globalThis.setTimeout;
   globalThis.setTimeout = () => 0;
@@ -84,11 +88,29 @@ test("command and toolbar copy through one offscreen document, with failure feed
         [2, true],
       ],
     );
+    command("copy-clean-url", { id: 4 });
+    await tick();
+    assert.equal(
+      messages.at(-1).text,
+      "https://example.com/?q=recovered",
+      "a shortcut tab without a URL is refreshed before copying",
+    );
+    assert.equal(badges.at(-1).text, "OK");
+    assert.equal(toasts.at(-1).target.tabId, 4);
     blocked = true;
     click({ id: 3, url: "chrome://extensions/" });
     await tick();
     assert.equal(badges.at(-1).text, "OK", "restricted pages retain successful copy feedback");
-    assert.equal(toasts.length, 2);
+    assert.equal(toasts.length, 3);
+    const copyCount = messages.length;
+    command("copy-clean-url", { id: 5 });
+    await tick();
+    assert.equal(
+      messages.length,
+      copyCount,
+      "a URL hidden by Chrome never overwrites the clipboard",
+    );
+    assert.equal(badges.at(-1).text, "ERR");
     blocked = false;
     fail = true;
     click({ id: 2, url: "https://example.com/" });
