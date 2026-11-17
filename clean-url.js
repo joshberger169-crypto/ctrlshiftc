@@ -1,29 +1,10 @@
-// Deliberately avoid ambiguous names such as ref, source, id, si, and feature.
-const TRACKING_KEYS = new Set([
-  "utm_source",
-  "utm_medium",
-  "utm_campaign",
-  "utm_term",
-  "utm_content",
-  "utm_id",
-  "utm_source_platform",
-  "utm_creative_format",
-  "utm_marketing_tactic",
-  "gclid",
-  "dclid",
-  "gbraid",
-  "wbraid",
-  "fbclid",
-  "msclkid",
-  "twclid",
-  "ttclid",
-  "yclid",
-  "igshid",
-  "mc_cid",
-  "mc_eid",
-  "_ga",
-  "_gl",
-]);
+import rules from "./rules/clearurls.js";
+
+const providers = rules.map(([url, parameters, exceptions]) => ({
+  url: new RegExp(url, "i"),
+  parameters: new RegExp(`^(?:${parameters.join("|")})$`, "i"),
+  exceptions: exceptions.map((pattern) => new RegExp(pattern, "i")),
+}));
 
 function decodeKey(part) {
   try {
@@ -63,7 +44,14 @@ export function cleanUrl(input) {
   const keys = parts.map(decodeKey);
   // Authentication and signed download links can depend on the entire query.
   if (keys.some(isProtectedKey)) return input;
-  const kept = parts.filter((_, index) => !TRACKING_KEYS.has(keys[index]));
+  const matching = providers.filter(
+    (provider) =>
+      provider.url.test(input) && !provider.exceptions.some((pattern) => pattern.test(input)),
+  );
+  const kept = parts.filter(
+    (_, index) =>
+      keys[index] === null || !matching.some((provider) => provider.parameters.test(keys[index])),
+  );
   if (kept.length === parts.length) return input;
   const query = kept.join("&");
   return input.slice(0, queryIndex) + (query ? `?${query}` : "") + input.slice(end);

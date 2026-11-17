@@ -3,6 +3,34 @@ import assert from "node:assert/strict";
 import { cleanUrl } from "../clean-url.js";
 
 const cases = [
+  [
+    "https://www.google.com/search?q=hello&source=hp&ved=abc",
+    "https://www.google.com/search?q=hello",
+  ],
+  [
+    "https://docs.google.com/document/d/123?source=keep",
+    "https://docs.google.com/document/d/123?source=keep",
+  ],
+  [
+    "https://www.amazon.com/s?keywords=keyboard&qid=123",
+    "https://www.amazon.com/s?keywords=keyboard",
+  ],
+  ["https://www.amazon.com/dp/B123?qid=123&ref_=share", "https://www.amazon.com/dp/B123"],
+  ["https://youtu.be/abc?si=tracking&t=45", "https://youtu.be/abc?t=45"],
+  ["https://example.com/?si=needed&source=keep", "https://example.com/?si=needed&source=keep"],
+  [
+    "https://github.com/ClearURLs/Rules?utm_source=chatgpt.com",
+    "https://github.com/ClearURLs/Rules?utm_source=chatgpt.com",
+  ],
+  [
+    "https://www.google.com/search?q=hello&sig=abc&source=keep",
+    "https://www.google.com/search?q=hello&sig=abc&source=keep",
+  ],
+  [
+    "https://example.com/?utm_source=mail#utm_campaign=keep",
+    "https://example.com/#utm_campaign=keep",
+  ],
+
   ["https://example.com/article?utm_source=mail&fbclid=abc", "https://example.com/article"],
   [
     "https://example.com/?q=red%20shoes&utm_medium=email&page=2#results",
@@ -13,7 +41,7 @@ const cases = [
     "https://example.com/?%75tm_source=a&FBCLID=b&ref=home&source=docs&si=video",
     "https://example.com/?ref=home&source=docs&si=video",
   ],
-  ["https://example.com/?utm_custom=needed&utm_source=a", "https://example.com/?utm_custom=needed"],
+  ["https://example.com/?utm_custom=needed&utm_source=a", "https://example.com/"],
   [
     "https://example.com/?q=a+b&empty=&flag&path=%2f%2F&utm_id=1",
     "https://example.com/?q=a+b&empty=&flag&path=%2f%2F",

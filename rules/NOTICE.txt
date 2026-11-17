@@ -1,0 +1,6 @@
+Includes query-removal rules derived from ClearURLs/Rules.
+Copyright ClearURLs contributors. Licensed under LGPL-3.0.
+Source: https://github.com/ClearURLs/Rules/tree/c080ff46cb381b092c09d46977e4f2e76b38ae5f
+Modified: projected to URL patterns, parameter rules, and exceptions only.
+Regenerate: node scripts/update-rules.js
+Readable rules are distributed in clearurls.js; accompanying licenses apply to them.
