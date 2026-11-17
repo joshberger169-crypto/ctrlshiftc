@@ -7,10 +7,10 @@ Press **Ctrl+Shift+C** to copy the current tab's URL with known tracking paramet
 
 ## Install
 
-Requires Chrome 116 or newer. No build step is needed.
+Requires Chrome 116 or newer. The compact build contains only four files.
 
 1. Open `chrome://extensions` and enable **Developer mode**.
-2. Click **Load unpacked** and select this project's folder (the folder containing `manifest.json`). If using the ZIP, extract it first.
+2. Click **Load unpacked** and select `dist/` after building, or the extracted ZIP folder. The project root also works for development.
 3. Open `chrome://extensions/shortcuts` and check the **Copy the current tab's clean URL** shortcut. Assign **Ctrl+Shift+C** if it is blank, or choose another combination if Chrome reserves it.
 4. Optionally pin CtrlShiftC in Chrome's Extensions menu for toolbar access and visible copy feedback.
 
@@ -50,9 +50,10 @@ npm ci
 npm run lint
 npm run check
 npm test
+npm run build
 ```
 
-Vite+ provides linting and formatting through `vp lint` and `vp check`. Tests use Node's built-in test runner. They exercise cleaning edge cases and the command → offscreen message → clipboard response flow using Chrome/DOM mocks. Development dependencies stay in ignored `node_modules/`; the extension itself has no runtime dependencies or build step.
+Vite+ provides linting and formatting through `vp lint` and `vp check`. Tests use Node's built-in test runner. They exercise cleaning edge cases and the command → offscreen message → clipboard response flow using Chrome/DOM mocks. Development dependencies stay in ignored `node_modules/`; the extension itself has no runtime dependencies. `npm run build` creates a minified four-file extension in `dist/`, excluding tests, docs, tooling, and Node dependencies.
 
 To verify in Chrome after loading:
 

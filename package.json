@@ -7,7 +7,8 @@
     "test": "node --test",
     "check": "vp check",
     "lint": "vp lint --deny-warnings",
-    "fmt": "vp fmt"
+    "fmt": "vp fmt",
+    "build": "vp build"
   },
   "devDependencies": {
     "vite-plus": "^1.7.0"
