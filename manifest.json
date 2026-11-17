@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "CtrlShiftC — Copy Clean URL",
+  "version": "1.0.0",
+  "description": "Copy the current tab's URL without known tracking parameters.",
+  "minimum_chrome_version": "116",
+  "permissions": ["activeTab", "clipboardWrite", "offscreen"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": { "default_title": "Copy clean URL" },
+  "commands": {
+    "copy-clean-url": {
+      "suggested_key": { "default": "Ctrl+Shift+C", "mac": "MacCtrl+Shift+C" },
+      "description": "Copy the current tab's clean URL"
+    }
+  }
+}

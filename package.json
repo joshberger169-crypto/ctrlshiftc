@@ -1,0 +1,15 @@
+{
+  "name": "ctrlshiftc",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "vp check",
+    "lint": "vp lint --deny-warnings",
+    "fmt": "vp fmt"
+  },
+  "devDependencies": {
+    "vite-plus": "^1.7.0"
+  }
+}
