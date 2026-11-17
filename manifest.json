@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Copy the current tab's URL without known tracking parameters.",
   "minimum_chrome_version": "116",
-  "permissions": ["activeTab", "clipboardWrite", "offscreen"],
+  "permissions": ["activeTab", "clipboardWrite", "offscreen", "scripting"],
   "background": { "service_worker": "background.js", "type": "module" },
   "action": { "default_title": "Copy clean URL" },
   "commands": {

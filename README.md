@@ -20,7 +20,7 @@ Chrome's Inspect shortcut also uses Ctrl+Shift+C on some platforms. Chrome or OS
 
 ## Behavior
 
-The toolbar badge briefly shows **OK** after a successful copy or **ERR** if copying fails. Pin the extension to see this feedback.
+A brief **✓ Clean URL copied** toast appears at the bottom of the page after copying. It dismisses automatically without taking focus. Failed copies show an error message. Chrome internal pages and the Web Store block page overlays; the toolbar badge provides **OK** / **ERR** feedback there. Pin the extension to see the badge.
 
 For example:
 
@@ -41,7 +41,8 @@ No analytics, network requests, remote code, URL history, or persistent storage.
 
 - `activeTab`: reads the tab URL following your shortcut or toolbar click; no broad browsing-history or website permissions.
 - `clipboardWrite`: writes the copied URL; never reads the clipboard.
-- `offscreen`: uses a bundled hidden document to perform the clipboard write without injecting scripts into websites. See [Chrome's offscreen documentation](https://developer.chrome.com/docs/extensions/reference/api/offscreen).
+- `scripting`: shows the confirmation toast on the current page after your shortcut or click, using temporary `activeTab` access.
+- `offscreen`: uses a bundled hidden document to perform the clipboard write. See [Chrome's offscreen documentation](https://developer.chrome.com/docs/extensions/reference/api/offscreen).
 
 ## Development and verification
 

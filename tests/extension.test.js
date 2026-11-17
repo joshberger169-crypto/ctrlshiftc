@@ -8,12 +8,20 @@ const tick = () => new Promise((resolve) => setImmediate(resolve));
 test("command and toolbar copy through one offscreen document, with failure feedback", async () => {
   const messages = [];
   const badges = [];
+  const toasts = [];
+  let blocked = false;
   let command,
     click,
     creations = 0,
     exists = false,
     fail = false;
   globalThis.chrome = {
+    scripting: {
+      executeScript: async (details) => {
+        if (blocked) throw new Error("Cannot access this page");
+        toasts.push(details);
+      },
+    },
     commands: {
       onCommand: {
         addListener: (fn) => {
@@ -69,10 +77,24 @@ test("command and toolbar copy through one offscreen document, with failure feed
       badges.map((b) => b.text),
       ["OK", "OK"],
     );
+    assert.deepEqual(
+      toasts.map((t) => [t.target.tabId, t.args[0]]),
+      [
+        [1, true],
+        [2, true],
+      ],
+    );
+    blocked = true;
+    click({ id: 3, url: "chrome://extensions/" });
+    await tick();
+    assert.equal(badges.at(-1).text, "OK", "restricted pages retain successful copy feedback");
+    assert.equal(toasts.length, 2);
+    blocked = false;
     fail = true;
     click({ id: 2, url: "https://example.com/" });
     await tick();
     assert.equal(badges.at(-1).text, "ERR");
+    assert.equal(toasts.at(-1).args[0], false, "failed copies never show a success toast");
   } finally {
     globalThis.setTimeout = originalTimeout;
     console.error = originalError;

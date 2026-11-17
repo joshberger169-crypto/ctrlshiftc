@@ -1,4 +1,5 @@
 import { cleanUrl } from "./clean-url.js";
+import { showToast } from "./toast.js";
 
 let creatingOffscreen;
 let queue = Promise.resolve();
@@ -38,6 +39,15 @@ async function feedback(tabId, success) {
         : "Could not copy URL. Try again using the toolbar button.",
     }),
   ]);
+  // Chrome's internal pages and the Web Store forbid script injection.
+  // Keep the badge confirmation there, and never turn a copied URL into an error.
+  await chrome.scripting
+    .executeScript({
+      target: { tabId },
+      func: showToast,
+      args: [success, `ctrlshiftc-${chrome.runtime.id}`],
+    })
+    .catch(() => {});
   feedbackTimers.set(
     tabId,
     setTimeout(() => {
